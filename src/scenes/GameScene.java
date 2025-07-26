@@ -1,6 +1,13 @@
 package scenes;
 
+import java.io.IOException;
+
 import org.lwjgl.util.vector.Vector2f;
+import org.newdawn.slick.opengl.Texture;
+import org.newdawn.slick.opengl.TextureLoader;
+
+
+import org.newdawn.slick.util.ResourceLoader;
 
 import tools.Time;
 import tools.physics.PhysicsEngine;
@@ -21,6 +28,9 @@ public class GameScene extends Screen {
 	private PhysicsObject ground3;
 	private ParticleSystem particleSystem;
 	
+	private Texture test;
+	private int testID;
+	
 	public static final int SCREEN_WIDTH = 854;
 	public static final int SCREEN_HEIGHT = 480;
 
@@ -28,7 +38,15 @@ public class GameScene extends Screen {
 		this.player = player;
 		engine = new PhysicsEngine();
 		camera = new Camera();
+		try {
+			test = TextureLoader.getTexture("PNG", ResourceLoader.getResourceAsStream("/res/test.png"));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
+		testID = test.getTextureID();
+		
 		particleSystem = new ParticleSystem();
 		
 		// Suelo
@@ -77,8 +95,8 @@ public class GameScene extends Screen {
 		if (Math.abs(player.body.vx) > 5f && player.body.isOnGround) {
 			Vector2f footPosition = new Vector2f(player.body.x + player.body.width / 2f,
 			                                     player.body.y + player.body.height);
-			particleSystem.emit(footPosition, 2, Particle.Shape.CIRCLE, 0.5f, 4f,
-			                    0.4f, 0.4f, 0.4f, false, 0); // humo gris
+			particleSystem.emit(footPosition, 2, Particle.Shape.QUAD, 0.5f, 4f,
+                    1.0f, 1.0f, 1.0f, true, testID);
 		}
 
 		particleSystem.update(Time.deltaTime);
