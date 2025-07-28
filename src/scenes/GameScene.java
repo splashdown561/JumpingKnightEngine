@@ -38,7 +38,7 @@ public class GameScene extends Screen {
 		this.player = player;
 		engine = new PhysicsEngine();
 		camera = new Camera();
-		camera.setType(Camera.CameraType.DYNAMIC);
+		camera.setType(Camera.CameraType.SCREEN_BASED);
 		try {
 			test = TextureLoader.getTexture("PNG", ResourceLoader.getResourceAsStream("/res/test.png"));
 		} catch (IOException e) {
@@ -79,9 +79,11 @@ public class GameScene extends Screen {
 		glDisable(GL_TEXTURE_2D);
 	    glColor3f(0.2f, 0.2f, 0.2f);
 		ground.render();
+		ground.renderDebug(0.5f, 0.0f, 0.5f);
 		ground2.render();
 		ground3.render();
 		particleSystem.render();
+		player.body.renderDebug(1.0f, 0.0f, 0.0f);
 		glEnable(GL_TEXTURE_2D);
 		glColor3f(1.0F, 1.0F, 1.0F);
 		player.render(28, 38);

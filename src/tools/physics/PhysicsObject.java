@@ -37,7 +37,10 @@ public class PhysicsObject {
         isOnGround = false;
     }
 
-    public void renderDebug() {
+    public void renderDebug(float r, float g, float b) {
+    	
+    	glColor3f(r,g,b);
+    	
     	glBegin(GL_LINE_LOOP);
     		glVertex2f(x, y);
     		glVertex2f(x + width, y);
