@@ -1,12 +1,14 @@
 package graphics;
 
 import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL13.*;
 
 import java.awt.Font;
 
 import org.lwjgl.LWJGLException;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
+import org.lwjgl.opengl.PixelFormat;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.newdawn.slick.TrueTypeFont;
@@ -30,7 +32,7 @@ public class Window {
 		// 1) Crear la ventana
 		try {
 			Display.setDisplayMode(new DisplayMode(width, height));
-			Display.create();
+			Display.create(new PixelFormat().withDepthBits(24).withSamples(4));
 		} catch (LWJGLException e) {
 			e.printStackTrace();
 			System.exit(1);
@@ -57,6 +59,8 @@ public class Window {
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		glClearColor(0.0f, 0.5f, 1.0f, 1.0f);
+		
+		glEnable(GL_MULTISAMPLE);
 
 		// 4) Iniciar en el menú principal
 		Game.setCurrentScreen(new MainMenuScreen());
@@ -75,7 +79,8 @@ public class Window {
 			while (Mouse.next()) {
 				if (Mouse.getEventButtonState() && Mouse.getEventButton() == 0) {
 					int mx = Mouse.getEventX();
-					int my = windowHeight - Mouse.getEventY(); // invertir Y
+					int screenH = Display.getDisplayMode().getHeight();
+					int my = screenH - Mouse.getEventY();
 					Screen overlay = Game.getOverlay();
 					if (overlay != null) {
 						overlay.mouseClicked(mx, my, 0);
@@ -133,4 +138,18 @@ public class Window {
 	public static Screen getLastScreen() {
 		return lastScreen;
 	}
+	
+	public static void updateViewport() {
+		int width = Display.getDisplayMode().getWidth();
+		int height = Display.getDisplayMode().getHeight();
+
+		glViewport(0, 0, width, height); // Ajusta la vista
+		glMatrixMode(GL_PROJECTION);
+		glLoadIdentity();
+		glOrtho(0, width, height, 0, -1, 1); // Coordenadas ortográficas
+		glMatrixMode(GL_MODELVIEW);
+		glLoadIdentity();
+	}
+
+	
 }

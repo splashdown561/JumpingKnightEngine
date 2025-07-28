@@ -13,6 +13,13 @@ public class FontRenderer {
 		font = f;
 	}
 
+	public static void drawCentered(String text, int centerX, int centerY) {
+		if (font == null) return;
+		int width = font.getWidth(text);
+		int height = font.getHeight(text);
+		font.drawString(centerX - width / 2, centerY - height / 2, text);
+	}
+	
 	public static void drawString(String text, float x, float y) {
 		if (font == null) {
 			System.err.println("Font is not initialized!");

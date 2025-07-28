@@ -65,10 +65,10 @@ public class Particle {
 				drawTriangle();
 				break;
 			case HEXAGON:
-				drawHexagon(20.0f);
+				drawHexagon(25.0f);
 				break;
 			case PENTAGON:
-				drawPentagon(20.0f);
+				drawPentagon(25.0f);
 				break;
 		}
 	}

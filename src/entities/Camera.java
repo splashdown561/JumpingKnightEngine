@@ -1,65 +1,73 @@
 package entities;
 
 import static org.lwjgl.opengl.GL11.*;
-import scenes.GameScene;
 
 public class Camera {
-	public enum CameraType {
-		SCREEN_BASED,
-		DYNAMIC
-	}
+    /** Dimensiones fijas de tu mundo en unidades de juego */
+    public static final int WORLD_WIDTH  = 854;
+    public static final int WORLD_HEIGHT = 480;
 
-	private float currentX = 0;
-	private float currentY = 0;
-	private float targetX = 0;
-	private float targetY = 0;
-	private final float speed = 0.1f; // velocidad de interpolación
-	private CameraType type = CameraType.SCREEN_BASED; // tipo de cámara actual
+    public enum CameraType {
+        SCREEN_BASED,  // Paginación horizontal por ancho de mundo
+        DYNAMIC        // Cámara libre centrada en el jugador
+    }
 
-	public void setType(CameraType type) {
-		this.type = type;
-	}
+    private float currentX = 0, currentY = 0;
+    private float targetX  = 0, targetY  = 0;
+    private final float speed = 0.1f;
+    private CameraType type = CameraType.SCREEN_BASED;
 
-	public CameraType getType() {
-		return type;
-	}
+    public void setType(CameraType type) {
+        this.type = type;
+    }
 
-	public void update(float playerX, float playerY) {
-		switch (type) {
-			case SCREEN_BASED:
-				if (playerX < targetX) {
-					targetX -= GameScene.SCREEN_WIDTH;
-				}
-				if (playerX >= targetX + GameScene.SCREEN_WIDTH) {
-					targetX += GameScene.SCREEN_WIDTH;
-				}
-				if (playerY < targetY) {
-					targetY -= GameScene.SCREEN_HEIGHT;
-				}
-				if (playerY >= targetY + GameScene.SCREEN_HEIGHT) {
-					targetY += GameScene.SCREEN_HEIGHT;
-				}
-				break;
+    public CameraType getType() {
+        return type;
+    }
 
-			case DYNAMIC:
-				// Centra la cámara alrededor del jugador
-				targetX = playerX - GameScene.SCREEN_WIDTH / 2f;
-				targetY = playerY - GameScene.SCREEN_HEIGHT / 2f;
-				break;
-		}
+    /**
+     * 1) En SCREEN_BASED: pagina en bloques de WORLD_WIDTH
+     *    y deja Y siempre en 0 (no sube/baja).
+     * 2) En DYNAMIC: centra en el jugador usando WORLD_WIDTH/HEIGHT.
+     */
+    public void update(float playerX, float playerY) {
+        if (type == CameraType.SCREEN_BASED) {
+            // Paging horizontal por ancho de mundo
+            if (playerX < targetX) {
+                targetX -= WORLD_WIDTH;
+            }
+            if (playerX >= targetX + WORLD_WIDTH) {
+                targetX += WORLD_WIDTH;
+            }
+            // Fijar vertical en 0
+            targetY = 0;
 
-		// Interpolación suave
-		currentX += (targetX - currentX) * speed;
-		currentY += (targetY - currentY) * speed;
-	}
+        } else {
+            // Centrado dinámico: mitad de ancho y alto de mundo
+            targetX = playerX - WORLD_WIDTH  / 2f;
+            targetY = playerY - WORLD_HEIGHT / 2f;
+        }
 
-	public void apply() {
-		glMatrixMode(GL_PROJECTION);
-		glLoadIdentity();
-		glOrtho(currentX, currentX + GameScene.SCREEN_WIDTH,
-		        currentY + GameScene.SCREEN_HEIGHT, currentY,
-		        -1, 1);
-		glMatrixMode(GL_MODELVIEW);
-		glLoadIdentity();
-	}
+        // Interpolación suave
+        currentX += (targetX - currentX) * speed;
+        currentY += (targetY - currentY) * speed;
+    }
+
+    /**
+     * Ajusta la matriz de proyección para mostrar siempre un rectángulo
+     * WORLD_WIDTH×WORLD_HEIGHT en “unidades de mundo”.
+     */
+    public void apply() {
+        glMatrixMode(GL_PROJECTION);
+        glLoadIdentity();
+        glOrtho(
+            currentX,
+            currentX + WORLD_WIDTH,
+            currentY + WORLD_HEIGHT,
+            currentY,
+            -1, 1
+        );
+        glMatrixMode(GL_MODELVIEW);
+        glLoadIdentity();
+    }
 }
