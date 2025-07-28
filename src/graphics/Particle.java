@@ -17,7 +17,9 @@ public class Particle {
 	public enum Shape {
 		QUAD,
 		CIRCLE,
-		TRIANGLE
+		TRIANGLE,
+		HEXAGON,
+		PENTAGON
 	}
 
 	public Particle(Vector2f position, Vector2f velocity, float life, float size) {
@@ -62,6 +64,12 @@ public class Particle {
 			case TRIANGLE:
 				drawTriangle();
 				break;
+			case HEXAGON:
+				drawHexagon(20.0f);
+				break;
+			case PENTAGON:
+				drawPentagon(20.0f);
+				break;
 		}
 	}
 
@@ -74,6 +82,28 @@ public class Particle {
 		glEnd();
 	}
 
+	private void drawHexagon(float radius) {
+		glBegin(GL_POLYGON);
+		for (int i = 0; i < 6; i++) {
+			float angle = (float)(2 * Math.PI * i / 6); // 6 lados
+			float x = position.x + (float)Math.cos(angle) * radius;
+			float y = position.y + (float)Math.sin(angle) * radius;
+			glVertex2f(x, y);
+		}
+		glEnd();
+	}
+	
+	private void drawPentagon(float radius) {
+		glBegin(GL_POLYGON);
+		for (int i = 0; i < 5; i++) {
+			float angle = (float)(2 * Math.PI * i / 5); // 5 lados
+			float x = position.x + (float)Math.cos(angle) * radius;
+			float y = position.y + (float)Math.sin(angle) * radius;
+			glVertex2f(x, y);
+		}
+		glEnd();
+	}
+	
 	private void drawCircle() {
 		glBegin(GL_TRIANGLE_FAN);
 		glVertex2f(position.x, position.y);

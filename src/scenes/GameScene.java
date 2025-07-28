@@ -99,8 +99,8 @@ public class GameScene extends Screen {
 		if (Math.abs(player.body.vx) > 5f && player.body.isOnGround) {
 			Vector2f footPosition = new Vector2f(player.body.x + player.body.width / 2f,
 			                                     player.body.y + player.body.height);
-			particleSystem.emit(footPosition, 2, Particle.Shape.QUAD, 0.5f, 4f,
-                    1.0f, 1.0f, 1.0f, true, testID);
+			particleSystem.emit(footPosition, 2, Particle.Shape.HEXAGON, 0.5f, 4f,
+                    0.8f, 0.8f, 0.8f, false, 0);
 		}
 
 		particleSystem.update(Time.deltaTime);
