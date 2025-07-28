@@ -80,6 +80,7 @@ public class GameScene extends Screen {
 	    glColor3f(0.2f, 0.2f, 0.2f);
 		ground.render();
 		ground.renderDebug(0.5f, 0.0f, 0.5f);
+	    glColor3f(0.2f, 0.2f, 0.2f);
 		ground2.render();
 		ground3.render();
 		particleSystem.render();

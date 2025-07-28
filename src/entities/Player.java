@@ -3,6 +3,7 @@ package entities;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.util.vector.Vector2f;
 
+import scenes.FontRenderer;
 import tools.animator.*;
 import tools.Time;
 import tools.physics.PhysicsObject;
@@ -105,6 +106,10 @@ public class Player {
 
 
 	public void update() {
+		
+		String posText = "x: " + (int)body.x + " y: " + (int)body.y;
+		FontRenderer.drawString(posText, body.x, body.y - 20);
+		
 		if (body.isOnGround) {
 			coyoteTimer = COYOTE_TIME;
 		} else {
