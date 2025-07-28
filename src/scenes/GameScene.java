@@ -38,6 +38,7 @@ public class GameScene extends Screen {
 		this.player = player;
 		engine = new PhysicsEngine();
 		camera = new Camera();
+		camera.setType(Camera.CameraType.DYNAMIC);
 		try {
 			test = TextureLoader.getTexture("PNG", ResourceLoader.getResourceAsStream("/res/test.png"));
 		} catch (IOException e) {
