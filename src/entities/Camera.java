@@ -2,72 +2,69 @@ package entities;
 
 import static org.lwjgl.opengl.GL11.*;
 
+import org.lwjgl.opengl.Display;
+
 public class Camera {
-    /** Dimensiones fijas de tu mundo en unidades de juego */
-    public static final int WORLD_WIDTH  = 854;
-    public static final int WORLD_HEIGHT = 480;
 
-    public enum CameraType {
-        SCREEN_BASED,  // Paginación horizontal por ancho de mundo
-        DYNAMIC        // Cámara libre centrada en el jugador
-    }
+	public enum Mode {
+		DYNAMIC, SCREEN_BY_SCREEN
+	}
 
-    private float currentX = 0, currentY = 0;
-    private float targetX  = 0, targetY  = 0;
-    private final float speed = 0.1f;
-    private CameraType type = CameraType.SCREEN_BASED;
+	private float currentX = 0;
+	private float currentY = 0;
+	private float targetX = 0;
+	private float targetY = 0;
+	private final float speed = 1.5f; // velocidad de interpolación
 
-    public void setType(CameraType type) {
-        this.type = type;
-    }
+	public static final int WORLD_WIDTH = 854;
+	public static final int WORLD_HEIGHT = 480;
 
-    public CameraType getType() {
-        return type;
-    }
+	private Mode mode = Mode.DYNAMIC;
 
-    /**
-     * 1) En SCREEN_BASED: pagina en bloques de WORLD_WIDTH
-     *    y deja Y siempre en 0 (no sube/baja).
-     * 2) En DYNAMIC: centra en el jugador usando WORLD_WIDTH/HEIGHT.
-     */
-    public void update(float playerX, float playerY) {
-        if (type == CameraType.SCREEN_BASED) {
-            // Paging horizontal por ancho de mundo
-            if (playerX < targetX) {
-                targetX -= WORLD_WIDTH;
-            }
-            if (playerX >= targetX + WORLD_WIDTH) {
-                targetX += WORLD_WIDTH;
-            }
-            // Fijar vertical en 0
-            targetY = 0;
+	public void setMode(Mode newMode) {
+		this.mode = newMode;
+	}
 
-        } else {
-            // Centrado dinámico: mitad de ancho y alto de mundo
-            targetX = playerX - WORLD_WIDTH  / 2f;
-            targetY = playerY - WORLD_HEIGHT / 2f;
-        }
+	public void follow(float playerX, float playerY) {
+		if (mode == Mode.DYNAMIC) {
+			targetX = playerX - WORLD_WIDTH / 2f;
+			targetY = playerY - WORLD_HEIGHT / 2f;
+		} else if (mode == Mode.SCREEN_BY_SCREEN) {
+			int screenX = (int)(playerX / WORLD_WIDTH);
+			int screenY = (int)(playerY / WORLD_HEIGHT);
+			targetX = screenX * WORLD_WIDTH;
+			targetY = screenY * WORLD_HEIGHT;
+		}
+	}
 
-        // Interpolación suave
-        currentX += (targetX - currentX) * speed;
-        currentY += (targetY - currentY) * speed;
-    }
+	public void update(float delta) {
+		currentX += (targetX - currentX) * speed * delta;
+		currentY += (targetY - currentY) * speed * delta;
+	}
 
-    /**
-     * Ajusta la matriz de proyección para mostrar siempre un rectángulo
-     * WORLD_WIDTH×WORLD_HEIGHT en “unidades de mundo”.
-     */
-    public void apply() {
-        glMatrixMode(GL_PROJECTION);
-        glLoadIdentity();
-        glOrtho(
-            currentX,
-            currentX + WORLD_WIDTH,
-            currentY + WORLD_HEIGHT,
-            currentY,
-            -1, 1
-        );
-        glMatrixMode(GL_MODELVIEW);
-        glLoadIdentity();
-    }
+	public void apply() {
+		// Calcula escala y centrado para mantener proporción 16:9 (letterboxing)
+		float screenWidth = Display.getDisplayMode().getWidth();
+		float screenHeight = Display.getDisplayMode().getHeight();
+
+		float scaleX = screenWidth / (float)WORLD_WIDTH;
+		float scaleY = screenHeight / (float)WORLD_HEIGHT;
+		float scale = Math.min(scaleX, scaleY);
+
+		int viewportWidth = (int)(WORLD_WIDTH * scale);
+		int viewportHeight = (int)(WORLD_HEIGHT * scale);
+
+		int offsetX = (int)((screenWidth - viewportWidth) / 2f);
+		int offsetY = (int)((screenHeight - viewportHeight) / 2f);
+
+		glViewport(offsetX, offsetY, viewportWidth, viewportHeight);
+
+		// Proyección ortográfica fija para mantener el mismo tamaño del mundo
+		glMatrixMode(GL_PROJECTION);
+		glLoadIdentity();
+		glOrtho(currentX, currentX + WORLD_WIDTH, currentY + WORLD_HEIGHT, currentY, 1, -1);
+
+		glMatrixMode(GL_MODELVIEW);
+		glLoadIdentity();
+	}
 }

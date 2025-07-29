@@ -1,6 +1,5 @@
 package scenes;
 
-import org.lwjgl.opengl.Display;
 import org.lwjgl.util.vector.Vector2f;
 import static org.lwjgl.opengl.GL11.*;
 
@@ -25,7 +24,7 @@ public class GameScene extends Screen {
         this.player = player;
         engine = new PhysicsEngine();
         camera = new Camera();
-        camera.setType(Camera.CameraType.DYNAMIC);
+        camera.setMode(Camera.Mode.DYNAMIC);
 
         particleSystem = new ParticleSystem();
 
@@ -47,6 +46,8 @@ public class GameScene extends Screen {
     public void render() {
         // 1) Ajustar viewport al tamaño actual de la ventana
         Window.updateViewport();
+        
+        camera.follow(player.body.x, player.body.y);
 
         // 2) Aplicar la proyección/cámara (mantén tu glOrtho fijo de 854×480)
         camera.apply();
@@ -56,6 +57,7 @@ public class GameScene extends Screen {
         glColor3f(0.2f, 0.2f, 0.2f);
         ground.render();
         ground.renderDebug(0.5f, 0.0f, 0.5f);
+        glColor3f(0.2f, 0.2f, 0.2f);
         ground2.render();
         ground3.render();
         particleSystem.render();
@@ -86,7 +88,7 @@ public class GameScene extends Screen {
         }
 
         particleSystem.update(Time.deltaTime);
-        camera.update(player.body.x, player.body.y);
+        camera.update(Time.deltaTime);
     }
 
     @Override

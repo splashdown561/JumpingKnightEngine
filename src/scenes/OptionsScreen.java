@@ -24,10 +24,6 @@ public class OptionsScreen extends Screen {
         resolutions.add("640x360");                   // 360p
         resolutions.add("854x480");					  // 480p
         resolutions.add("1280x720");                  // 720p
-        resolutions.add("1920x1080");                 // 1080p
-        resolutions.add("2560x1440");                 // 1440p
-        resolutions.add("3840x2160");                 // 4K
-        resolutions.add("7680x4320");                 // 8K
 
         // Crear botones con posiciones temporales (se ajustarán en render)
         left  = new Button(0,0,30,30,"<",  new Runnable(){ public void run(){
