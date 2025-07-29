@@ -17,6 +17,8 @@ import scenes.FontRenderer;
 import scenes.Game;
 import scenes.MainMenuScreen;
 import scenes.Screen;
+import tools.sounds.Sound;
+import tools.sounds.Source;
 
 public class Window {
 
@@ -68,6 +70,8 @@ public class Window {
 		int fps = 0;
 		long fpsTimer = System.currentTimeMillis();
 		int lastFPS = 0;
+		
+		Source src = new Source();
 
 		// 5) Bucle principal
 		while (!Display.isCloseRequested()) {
@@ -122,7 +126,9 @@ public class Window {
 			Display.update();
 			Display.sync(60);
 		}
-
+		
+		src.delete();
+		Sound.cleanUp();
 		Display.destroy();
 	}
 	

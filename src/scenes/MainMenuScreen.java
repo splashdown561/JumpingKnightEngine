@@ -4,10 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.lwjgl.opengl.GL11.*;
+
 import org.lwjgl.opengl.Display;
 
 import graphics.Window;
 import scenes.FontRenderer;
+import tools.sounds.Sound;
+import tools.sounds.Source;
 
 public class MainMenuScreen extends Screen {
 
@@ -17,15 +20,28 @@ public class MainMenuScreen extends Screen {
     private final int spacing      = 20;  // espacio vertical entre botones
 
     public MainMenuScreen() {
+    	
+    	Sound.init();
+    	Sound.setListenerData();
+    	
+    	int buffer = Sound.loadSound("/mvp.wav");
+    	final Source src = new Source();
+    	
+    	src.play(buffer);
+    	
         // Creamos los botones con posición (0,0), se ajustarán en render()
         buttons.add(new Button(0, 0, buttonWidth, buttonHeight, "Singleplayer", new Runnable() {
             @Override public void run() {
+        		src.delete();
+        		Sound.cleanUp();
                 Game.initGame();
             }
         }));
 
         buttons.add(new Button(0, 0, buttonWidth, buttonHeight, "Options", new Runnable() {
-            @Override public void run() {
+        	@Override public void run() {
+        		src.delete();
+        		Sound.cleanUp();
                 Game.setCurrentScreen(new OptionsScreen());
             }
         }));

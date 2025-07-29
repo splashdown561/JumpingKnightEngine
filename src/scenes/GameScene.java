@@ -1,11 +1,13 @@
 package scenes;
 
 import org.lwjgl.util.vector.Vector2f;
-import static org.lwjgl.opengl.GL11.*;
 
+import static org.lwjgl.opengl.GL11.*;
 import tools.Time;
 import tools.physics.PhysicsEngine;
 import tools.physics.PhysicsObject;
+import tools.sounds.Sound;
+import tools.sounds.Source;
 import entities.Camera;
 import entities.Player;
 import graphics.ParticleSystem;
@@ -35,6 +37,14 @@ public class GameScene extends Screen {
         ground .isStatic = true; ground .isOnGround = true;
         ground2.isStatic = true; ground2.isOnGround = true;
         ground3.isStatic = true; ground3.isOnGround = true;
+        
+        Sound.init();
+    	Sound.setListenerData();
+    	
+    	int buffer = Sound.loadSound("/life2.wav");
+    	final Source src = new Source();
+    	
+    	src.play(buffer);
 
         engine.addObject(player.body);
         engine.addObject(ground);
